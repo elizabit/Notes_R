@@ -1,0 +1,223 @@
+#Assignment 2 Elizabeth Fink
+
+#------------------------------------------------------------------------
+#FULL MONTY.HALL FUNCTION
+monty.hall = function(strategy = "keep"){
+	#prizes, door, and choice
+		prizes = c("goat", "goat", "car")
+		placement = sample(prizes, size = 3, replace = FALSE)
+		door.choice = sample(placement, 1)
+	#if keep
+	if (strategy == "keep"){
+			if (door.choice == "car"){
+				result = "WIN"
+				print(result)
+			}
+			else{
+				result = "LOOSE"
+				print(result)
+			}
+	}
+	else{ 
+	#if switch
+			if(strategy == "switch"){
+					if(door.choice == "car"){
+						result = "LOOSE"
+						print(result)	
+					}
+					else{
+						if(door.choice == "goat"){
+							result = "WIN"
+							print(result)
+						}	
+					}
+			}
+			else{
+	#if anything else
+				stop("need to enter a valid strategy('keep' or 'stay')")
+			}
+	}
+}
+#-----------------------------------------------------
+#test them
+monty.hall("switch")
+monty.hall("keep")
+#-----------------------------------------------------
+#keep wins
+monty.keep = sapply(1:10000, function(x) monty.hall("keep"))
+monty.keep
+keep.tab = table(monty.keep)
+# LOOSE   WIN
+#  6671	   3329
+keep.prob = 3329/10000
+keep.prob #0.3329
+#-----------------------------------------------------
+#switch wins
+monty.switch = sapply(1:10000, function(x) monty.hall("switch"))
+monty.switch
+switch.tab = table(monty.switch)
+# LOOSE!   WIN!
+#  3309    6691
+switch.prob = 6691/10000
+switch.prob #0.6691
+#------------------------------------------------------
+
+#making it look simpler...
+
+#-----------------------------------------------------
+#keep function
+keepfunction = function(){
+			prizes = c("goat", "goat", "car")
+			placement = sample(prizes, size = 3, replace = FALSE)
+			door.choice = sample(placement, 1)
+			if (door.choice == "car"){
+				#host.opens = "doorB"
+				result = "WIN"
+				print(result)
+			}
+			else{
+				#host.opens[placement[2] == "goat"] = "doorC"
+				result = "LOOSE"
+				print(result)
+			}
+}
+keepfunction()
+#-----------------------------------------------------
+#switch function
+switchfunction = function(){
+			prizes = c("goat", "goat", "car")
+			placement = sample(prizes, size = 3, replace = FALSE)
+			door.choice = sample(placement, 1)
+			if(door.choice == "car"){
+					#host.opens =
+					result = "LOOSE"
+					print(result)	
+			}
+			else{
+				if(door.choice == "goat"){
+				#host.opens = 
+				result = "WIN"
+				print(result)
+				}	
+			}
+}
+switchfunction()
+#-----------------------------------------------------
+#simplified function
+monty.hall.simple = function(strategy = "keep"){
+	if (strategy == "keep"){
+		keepfunction()	
+	}
+	else{ 
+			if(strategy == "switch"){
+					switchfunction()
+			}
+			else{
+				stop("need to enter a valid strategy('keep' or 'stay')")
+			}
+	}
+}
+monty.hall.simple("switch")
+trial.simple = sapply(1:10000, function(x) monty.hall.simple("keep"))
+table(trial.simple)
+trial.simple2 = sapply(1:10000, function(x) monty.hall.simple("switch"))
+table(trial.simple2)
+#------------------------------------------------------
+
+#doesn't 'play' the game... but useful function for seeing data 
+#--------------------------------------------------------
+monty.hall.sim = function(trials = 10000){
+	doors = c('A', 'B', 'C')
+	door.car = sample(doors, trials, replace = TRUE)
+	door.choice = sample(doors, trials, replace = TRUE)
+	keep.wins = door.car == door.choice
+	switch.wins = door.car != door.choice
+	monty.data = data.frame(Trials = seq_len(trials), 
+						KeepWins = cumsum(keep.wins),
+						SwitchWins = cumsum(switch.wins))
+	monty.data$probability.keep = (monty.data$KeepWins / 10000)
+	monty.data$probability.switch = (monty.data$SwitchWins / 10000)
+	print(monty.data[10000, ])
+}
+monty.hall.sim()
+#-------------------------------------------------------------
+
+#Interactive Playable Version
+#-------------------------------------------------------------
+monty.hall.play = function(){
+	#Do you want to play?
+	play = readline("Welcome to The Monty Hall Game!!! Would you like to Play???? (Yes or No)")
+	#No...
+		if(play == "No"){
+				stop("Okay, See ya later!")
+		}else{
+	#Yes...
+			if(play == "Yes"){
+				prizes = c("goat", "goat", "car")
+				placement = sample(prizes, size = 3, replace = FALSE)
+				DoorA = placement[1]
+				DoorB = placement[2]
+				DoorC = placement[3]
+				print("There Are Three Doors, Behind 2 Doors are Goats, and Behind 1 Door is a Car!")
+			#Choose a Door!
+				door.choice = readline("Choose a Door: A, B, or C? (A,B,C)")
+			#Door A
+					if(door.choice == "A"){
+						door.choice = DoorA
+						otherdoors = c(DoorB, DoorC)
+							if(DoorB == "goat"){
+								host.opens = DoorB
+								print("Host Reveals Door B is a GOAT!")
+							}else{
+								host.opens = DoorC
+								print("Host Reveals Door C is a GOAT!")
+							}
+					}
+			#Door B
+					if(door.choice == "B"){
+						door.choice = DoorB
+						otherdoors = c(DoorA, DoorC)
+							if(DoorA == "goat"){
+								host.opens = DoorA
+								print("Host Reveals Door A is a GOAT!")
+							}else{
+								host.opens = DoorC
+								print("Host Reveals Door C is a GOAT!")	
+							}
+					}
+			#Door C
+					if(door.choice == "C"){
+						door.choice = DoorC
+						otherdoors = c(DoorA, DoorB)
+							if(DoorA == "goat"){
+								host.opens = DoorA
+								print("Host Reveals Door A is a GOAT!")
+							}else{
+								host.opens = DoorB
+								print("Host Reveals Door B is a GOAT!")	
+							}
+					}
+			#Strategy 
+				strategy = readline("Would you like to switch doors? (switch or keep)")
+					if(strategy == "keep"){
+							if(door.choice == "goat"){
+								print("The host opens the door to reveal... a GOAT!")
+							}else{
+								print("The host opens the door to reveal... a BRAND NEW CAR!")
+							}
+					}else{
+						if(strategy == "switch"){
+								if(door.choice == "goat"){
+								print("The host opens the door to reveal... a BRAND NEW CAR!")
+								}
+								else{
+									print("The host opens the door to reveal... a GOAT!")
+								}
+						}
+					}
+print("Thanks for Playing!!!")								
+		}
+	}
+}
+monty.hall.play()
+#---------------------------------------------------------------------------
