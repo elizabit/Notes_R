@@ -1,0 +1,73 @@
+# I don't own this code or attempt to claim it as my own. These are notes from a psychology 490 class at UNC Chapel Hill instructed by Dr. Castro. 
+
+# Creating Effective Graphs with Lattice
+#----------------------------------------
+
+install.packages(lattice)
+
+#Load package
+  library(lattice)	
+  
+ #simple plot
+xyplot(mpg ~ wt, data = mtcars, 
+	xlab = "Weight", ylab = "Miles per gallon", 
+	main = "Scatterplot of Weight and MPG for 32 Cars")  
+
+ #notes on lattice
+ 		#use xyplot() for plot()
+ 		#use histogram() for hist()
+		#use barcharts() for barplot()
+		#use bwplot() for boxplot 
+		
+		#other fun ones: wireframe(): 3D surface plot and cloud(): 3D scatterplot
+ 
+#We'll be using the mtcars dataframe and make a scatterplot
+#scatterplot with conditioning variables--- will all be in the same scale so that you can compare the scatterplots
+  xyplot(mpg ~ wt | cyl, data = mtcars,
+        pch = 19, cex = 1.5,
+        xlab = "Weight", ylab = "Miles per gallon",
+        main = "Scatterplot of Weight and MPG for 32 Cars by Cylinder")
+        
+        #all are labeled as cyl, v. 4cyl, 6cyl, 8cyl as in later version of graph
+#cex argument- control character sizes for axis labels, vector of length 2
+
+#xyplot(y ~ x)
+
+#But the panels are not labeled nicely- WHY?
+  class(mtcars$cyl)
+  [1] "numeric"
+ 
+#Let's save a new "cylinder" variable that's a factor
+  cylfac = factor(mtcars$cyl, levels = c(4, 6, 8),
+ 				  labels = c("4cyl", "6cyl", "8cyl"))
+
+#Create a copy of the dataframe and save the new variable in it
+  mymtcars = mtcars
+  mymtcars$cylfac = cylfac
+ 
+#Now plot again using the factor
+  xyplot(mpg ~ wt | cylfac, data = mymtcars,
+       pch = 19, cex = 1.5,
+       xlab = "Weight", ylab = "Miles per gallon",
+       main = "Scatterplot of Weight and MPG for 32 Cars by Cylinder")
+
+#Find a better layout
+  xyplot(mpg ~ wt | cylfac, data = mymtcars,
+       pch = 19, cex = 1.5,
+       xlab = "Weight", ylab = "Miles per gallon",
+       main = "Scatterplot of Weight and MPG for 32 Cars by Cylinder",
+       layout = c(3,1))    
+#Density Plot overlay
+#am is the transmission of the car (0 = automatic, 1 = manual), to add a legend use function auto.key()
+densityplot( ~ wt, groups = am, data = mtcars, auto.key = list(space = "right"))
+# or if you don't want them overlayed, you can create subplots using conditioning
+densityplot(~ wt | cyl, groups = am, data = mtcars, auto.key = list (space = "right"))
+
+
+#to make it 3D add a plus sign 
+#3Dplotfun(z-axisVar ~ x-axisVar + y-axisVar | condVar, group = groupingVar, data = mydata)
+
+
+
+#LET'S SEE SOME COOL EXAMPLES!
+  example(wireframe)
