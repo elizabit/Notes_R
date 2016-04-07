@@ -1,0 +1,415 @@
+#Elizabeth Fink
+#Assignment1
+#----------------------------------------------
+							# Loading in Data 
+#second half of my code will need this package----
+#install.packages(dplyr) # I commented this out, but it won't run without it
+
+#1 and 2
+	#bringing the files in
+		getwd()
+		setwd("/Users/eafink/Documents/PSYC490/ASSIGN_1_R/")
+	#any packages used
+		library(psych)
+		library(lattice)
+		library(dplyr)
+		library(ggplot2)
+		library(reshape2)
+	#data in
+		w1.data = 
+			read.csv( file = "w1_child.csv", 
+			header = TRUE, 
+			na.strings = c("9", "8", "98", "99")) 
+		w2.data = 
+			read.table (file = "w2_child.dat.txt", 
+			header = TRUE, 
+			na.strings = "-999")
+		w3.data = 
+			read.csv (file = "w3_child.csv", 
+			header = TRUE, 
+			na.strings = c("9", "8", "98", "99"))
+		w4.data = 
+			read.csv (file = "w4_child.csv", 
+			header = FALSE, 
+			na.strings = c("9", "8", "98", "99"))
+		educinc = 
+			read.csv (file = "educinc.csv", 
+			header = TRUE, 
+			na.strings = ".")
+		w4.names = 
+			read.table (file = "names_w4_child.txt", header = FALSE) 
+#3
+	#w4 rename
+		w4.names.edit = readLines("names_w4_child.txt")
+		w4.names.edit 
+		names(w4.data)
+		length(w4.names)
+		length(w4.data)
+		names(w4.data) = w4.names.edit
+		head(w4.data)
+	#rename educinc
+		names(w1.data)
+		names(w2.data)
+		names(w3.data)
+		names(w4.data)
+		names(educinc) = c("FAMID", "income", "fameduc") #make it match other data
+		names(educinc)
+	#merge data
+		data.merge.w1.w2 = 
+			merge (
+				w1.data, w2.data, 
+				by = "FAMID", 
+				all = TRUE)  
+		data.merge.w1.w2.w3 = 
+			merge (
+				data.merge.w1.w2, w3.data, 
+				by = "FAMID", 
+				all = TRUE)
+		data.merge.w = 
+			merge (
+				data.merge.w1.w2.w3, w4.data, 
+				by = "FAMID", 
+				all = TRUE)
+		data.merge.all =
+			merge (
+			 	data.merge.w, educinc, 
+		 		by = "FAMID", 
+		 		all = TRUE)
+	#grep placements
+		names(data.merge.all)  	
+			c01COHORT.place = 
+				grep(
+					"c01COHORT", names(data.merge.all))	#[1] 2
+			c01GENDER.place = 
+				grep(
+					"C01GENDER", names(data.merge.all))	#[1] 8
+			c01school.place = 
+				grep(
+					"c01school", names(data.merge.all))	#[1] 13
+			c01sibli.place = 
+				grep(
+					"c01sibli", names(data.merge.all))	#[1] 18
+			income.place = 
+				grep(
+					"income", names(data.merge.all)) 		#[1] 2690
+			fameduc.place = 
+				grep(
+					"fameduc", names(data.merge.all))		#[1] 2691
+			atts.place = 
+				grep(
+					"atts", names(data.merge.all))
+			pcmp.place = 
+				grep(
+					"pcmp", names(data.merge.all))
+			attt.place = 
+				grep(
+					"attt", names(data.merge.all))
+			dscr.place = 
+				grep(
+					"dscr", names(data.merge.all))
+			atod.place = 
+				grep(
+					"atod", names(data.merge.all))
+			edex01.place = 
+				grep(
+					"edex01", names(data.merge.all))
+	#final data set
+		final.data.set = 
+			data.merge.all[ , 
+			c(1, atts.place, pcmp.place, attt.place, dscr.place, atod.place, 
+			c01COHORT.place, c01GENDER.place, c01school.place, c01sibli.place, 
+			income.place, fameduc.place, 
+			edex01.place, 2690, 2691)] 
+		dim(final.data.set) # 674 325
+#4
+	#reverse code PCMP item 1
+		head(
+			final.data.set$c01pcmp01) #[1]  2  1  1  1 NA  1
+		head(
+			final.data.set$c02pcmp01) #[1]  2  1 NA  1  2 NA
+		head(
+			final.data.set$C03pcmp01) #[1] 2 1 1 1 1 1
+		head(
+			final.data.set$c04pcmp01) #[1] 1 1 1 1 1 1
+		range(
+			final.data.set$c01pcmp01, na.rm = T) #[1] 1 4
+		range(
+			final.data.set$c02pcmp01, na.rm = T) #[1] 1 4
+		range(
+			final.data.set$C03pcmp01, na.rm = T) #[1] 1 4
+		range(
+			final.data.set$c04pcmp01, na.rm = T) #[1] 1 4
+		final.data.set$c01pcmp01.R = 
+			(final.data.set$c01pcmp01 -5) * -1
+		final.data.set$c02pcmp01.R = 
+			(final.data.set$c02pcmp01 -5) * -1
+		final.data.set$C03pcmp01.R = 
+			(final.data.set$C03pcmp01 -5) * -1
+		final.data.set$c04pcmp01.R = 
+			(final.data.set$c04pcmp01 -5) * -1
+	#reverse code PCMP item 2
+		head(
+			final.data.set$c01pcmp02) #[1]  2  1  1  1 NA  1
+		head(
+			final.data.set$c02pcmp02) #[1]  1  1 NA  1  1 NA
+		head(
+			final.data.set$C03pcmp02) #[1] 2 1 1 1 1 2
+		head(
+			final.data.set$c04pcmp02) #[1] 1 1 1 1 1 2
+		range(
+			final.data.set$c01pcmp02, na.rm = T) #[1] 1 4
+		range(
+			final.data.set$c02pcmp02, na.rm = T) #[1] 1 4
+		range(
+			final.data.set$C03pcmp02, na.rm = T) #[1] 1 4
+		range(
+			final.data.set$c04pcmp02, na.rm = T) #[1] 1 4
+		final.data.set$c01pcmp02.R = 
+			(final.data.set$c01pcmp02 -5) * -1	
+		final.data.set$c02pcmp02.R = 
+			(final.data.set$c02pcmp02 -5) * -1
+		final.data.set$C03pcmp02.R = 
+			(final.data.set$C03pcmp02 -5) * -1
+		final.data.set$c04pcmp02.R = 
+			(final.data.set$c04pcmp02 -5) * -1
+	#wave 1 scales PCPM ATTT DSCR
+		final.data.set$pcmp.w1.avg = 
+			with(
+				final.data.set, 
+				((c01pcmp01.R + c01pcmp02.R + c01pcmp03 + 
+				c01pcmp04 + c01pcmp05 + c01pcmp06 + 
+				c01pcmp07 + c01pcmp08 + c01pcmp09)/9))
+		final.data.set$attt.w1.avg = 
+			with(
+				final.data.set, 
+				((c01attt01 + c01attt02 + c01attt03 + 
+				c01attt04 + c01attt05 + c01attt06 + 
+				c01attt07 + c01attt08 + c01attt09)/9))
+		final.data.set$dscr.w1.avg = 
+			with(
+				final.data.set, 
+				((c01dscr07 + c01dscr08 + c01dscr09 + 
+				c01dscr10)/4))
+	#wave 4 scales PCMP ATTT DSCR
+		final.data.set$pcmp.w4.avg = 
+			with(
+				final.data.set, 
+				((c04pcmp01.R + c04pcmp02.R + c04pcmp03 + 
+				c04pcmp04 + c04pcmp05 + c04pcmp06 + 
+				c04pcmp07 + c04pcmp08 + c04pcmp09)/9))
+		final.data.set$attt.w4.avg = 
+			with(
+				final.data.set, 
+				((c04attt01 + c04attt02 + c04attt03 + 
+				c04attt04 + c04attt05 + c04attt06 + 
+				c04attt07 + c04attt08 + c04attt09)/9))
+		final.data.set$dscr.w4.avg = 
+			with(
+				final.data.set, 
+				((c04dscr07 + c04dscr08 + c04dscr09 + 
+				c04dscr10)/4))
+												head(final.data.set)
+	# average scale score for atts for waves 1, 2, 3, 4; items 3 7 8 10
+		final.data.set$atts.w1.avg = 
+			with(
+				final.data.set, 
+				((c01atts03 + c01atts07 + c01atts08 + c01atts10 )/4))
+		final.data.set$atts.w2.avg = 
+			with(
+				final.data.set, 
+				((c02atts03 + c02atts07 + c02atts08 + c02atts10 )/4))
+		final.data.set$atts.w3.avg = 
+			with(
+				final.data.set, 
+				((C03atts03 + C03atts07 + C03atts08 + C03atts10 )/4))
+		final.data.set$atts.w4.avg = 
+			with(
+				final.data.set, 
+				((c04atts03 + c04atts07 + c04atts08 + c04atts10 )/4))
+												head(final.data.set)
+	#ATOD Placement
+		atod.placew4 = grep(
+						"c04atod", names(final.data.set))
+		atod.placew1 = grep(
+						"c01atod", names(final.data.set))
+		df.temp.atod =  final.data.set[ , c(atod.placew4, atod.placew1)] 
+	#sum ATOD
+		final.data.set$atodw4.sum = 
+			with(
+				final.data.set, 
+				rowSums(final.data.set, 
+				c(1:674, atod.placew4)))
+		final.data.set$atodw1.sum = 
+			with(
+				final.data.set, 
+				rowSums(final.data.set, 
+				c(1:674, atod.placew1)))
+													head(final.data.set)
+	# NEW DATA SET WITH SCALE VARIABLES, consolidated for subsetting and viewing
+		final.df = 
+			select(final.data.set, 
+				FAMID, c01COHORT, C01GENDER, 
+				c01school, c01sibli, fameduc, 
+				income, c04edex01, contains(".avg"), 
+				contains(".sum"))
+													head(final.df)
+	# NEW EDU VARIABLE
+		final.df$newedu = NA
+		final.df$newedu[final.df$fameduc <7] = "elementary"
+		final.df$newedu[final.df$fameduc >=7 & final.df$fameduc <13] = "high school"
+		final.df$newedu[final.df$fameduc >=13 & final.df$fameduc <17] = "college"
+		final.df$newedu[final.df$fameduc >17] = "more than college"
+		
+		final.df$newedu = 
+			factor(
+				final.df$newedu, 
+				levels = c("elementary", "high school", "college", 
+				"more than college"))
+#5
+	#gender_ r variable
+		final.df$gender_r = NA
+		final.df$gender_r[final.df$C01GENDER <= 1] = "female"
+		final.df$gender_r[final.df$C01GENDER >= 2] = "male"
+		head(final.df)
+		class(final.df$gender_r)
+	
+		final.df$gender_r = 
+			factor(
+				final.df$gender_r, 
+				levels = c("female", "male"))
+#6	
+	#aggregate gender/edex/educ
+		ag.educ = 
+			aggregate(
+				final.df$c04edex01, 
+				by = list(
+					Education = final.df$newedu, 
+					Gender = final.df$gender_r), 
+				FUN = mean, 
+				na.rm = TRUE)
+		names(ag.educ) = c("Education", "Gender", "Mean.Exp")
+		length(final.df$newedu)
+		length(final.df$gender_r)
+	#dotplot	
+		ggplot(data = ag.educ, aes(x = Mean.Exp, y = Education, colour = Gender, shape = Gender)) + geom_point() + ggtitle("Educational Expectations by Gender and Parental Education") + scale_colour_manual(values = c("red", "blue")) + xlab("Average Educational Expectation") + ylab("Parental Education") 
+
+#7
+	#xyplot
+		xyeduc = select(final.df, FAMID, fameduc, c04edex01, gender_r) 
+	
+		xyplot(fameduc ~ c04edex01 | gender_r, 
+			data = xyeduc, pch = 19, cex = 1.5, 
+			xlab = "Child's Educational Expectations", 
+			ylab = "Family's Education", 
+			main = "Educational Expecations by Education and Gender")
+#8
+	#spaghetti plot
+		atts.dat = 
+			final.data.set[ , 
+			c("FAMID", "atts.w1.avg", "atts.w2.avg", "atts.w3.avg", "atts.w4.avg")]
+		long.atts = 
+			melt(
+			atts.dat, 
+			id.vars = "FAMID", 
+			value.name = "score", 
+			variable.name = "atts")
+		head(long.atts) 
+		dim(long.atts) #2696 3
+
+		long.atts$time = NA
+		long.atts$time[long.atts$atts == "atts.w1.avg"] = 1
+		long.atts$time[long.atts$atts == "atts.w2.avg"] = 2
+		long.atts$time[long.atts$atts == "atts.w3.avg"] = 3
+		long.atts$time[long.atts$atts == "atts.w4.avg"] = 4
+
+		set.seed(1234)
+		selectids = sample(final.data.set$FAMID, 100, rep = FALSE)
+		samp.atts = long.atts[which(long.atts$FAMID %in% selectids), ]
+		dim(
+			samp.atts)
+		head(
+			samp.atts, n = 25)
+	
+	ggplot(data = samp.atts, aes(x = time, y = score)) + geom_line() + aes(colour = factor(FAMID), alpha = .5) + guides(colour = F) + xlab("Year of Participation in Study") + ylab("Levels of Attachment to School") + ggtitle("Spaghetti Plot of Years of Participation and Attachment to School")
+#9
+	#histograms of dscr and attt w1/w4
+		par(mfrow = c(2,2))
+		hist(
+			final.data.set$dscr.w1.avg, 
+			col = "blue", 
+			main = "Wave 1 Perceived Discrimination", 
+			xlab = "Perceived Discrimination")
+		hist(
+			final.data.set$dscr.w4.avg, 
+			col = "light blue", 
+			main = "Wave 4 Perceived Discrimination", 
+			xlab = "Perceived Discrimination")
+		hist(
+			final.data.set$attt.w1.avg, 
+			col = "red", 
+			main = "Wave 1 Teacher Attachment", 
+			xlab = "Attachment to Teacher")
+		hist(
+			final.data.set$attt.w4.avg, 
+			col = "light pink", 
+			main = "Wave 4 Teacher Attachment", 
+			xlab = "Attachment to Teacher")
+#10
+
+#quiz questions	
+#------------------------------------------------------------------------
+
+#1
+	dim(final.data.set)
+	# 674 345
+#2
+	describe(final.data.set$fameduc) #max = 19
+	high_ed = 19
+	which(final.data.set$fameduc %in% high_ed) #215
+	print(final.data.set[215, 1]) #6090- this is the FAMID
+#3
+	final.df$quiz3.1 = NA
+	final.df$quiz3.1[final.df$income >=1 & final.df$income <= 5] = "income1.5"
+	final.df$quiz3.1[final.df$income >5] = "other"
+	quiz.3.w1 = 
+		aggregate(
+		final.df$dscr.w1.avg, 
+		by = list(final.df$quiz3.1), 
+		FUN = mean, 
+		na.rm = T) #1.314076
+	quiz.3.w4 = 
+		aggregate(
+		final.df$dscr.w4.avg, 
+		by = list(final.df$quiz3.1), 
+		FUN = mean, 
+		na.rm = T) #1.095694
+	quiz.3.w1
+	quiz.3.w4
+#4
+	describe(final.data.set$attt.w1.avg) #sd = 0.53
+	describe(final.data.set$attt.w4.avg) #sd = 0.76
+	#wave 4 average has higher sd/increases
+	#True
+#5
+	quiz.5 = 
+		aggregate(
+			final.data.set$income, 
+			by = list(final.data.set$c01school), 
+			FUN = mean, na.rm = T)
+	names(quiz.5) = c("school", "mean.income")
+	head(quiz.5)
+	t_f = 10.850000
+	which(
+		quiz.5$mean.income %in% t_f) #0 so there isn't a value of 
+		#10.850000
+	#False
+#6- see dotplot, no additional code
+	#True
+#7- see dotplot, no additional code
+	#False
+#8- see xyplot, no additional code
+	#True
+#9- see histogram, no additional code
+	#A.B.
+#10- see spaghetti plot, no additional code
+	#C.D.
