@@ -1,0 +1,197 @@
+# I don't own this code or attempt to claim it as my own. These are notes from a psychology 490 class at UNC Chapel Hill instructed by Dr. Castro.
+
+#Graphics in R
+----------------------------------------------------------------------------------
+
+#packages === 'lattice' and 'ggplot2' <- install these for cool graphs
+
+plot () #scatterplot
+lines() #connect dots with lines in plot
+mtext() #add text to the margins
+axis() #add axis ticks and labels
+hist() #make a histogram
+points()
+text()
+title()
+legend()
+boxplot()
+
+
+
+
+summary(cars)
+[1]	     speed           dist       
+ Min.   : 4.0   Min.   :  2.00  
+ 1st Qu.:12.0   1st Qu.: 26.00  
+ Median :15.0   Median : 36.00  
+ Mean   :15.4   Mean   : 42.98  
+ 3rd Qu.:19.0   3rd Qu.: 56.00  
+ Max.   :25.0   Max.   :120.00 
+
+#Dataset that is preloaded into R
+
+head(cars)
+  speed dist
+1     4    2
+2     4   10
+3     7    4
+4     7   22
+5     8   16
+6     9   10
+--------------------------------------------------------------------
+
+#display two plots in one graphics' window; 1 row of plots by 3 columns
+par ( mfrow = c(1, 3) )
+
+#using the speed and dist variables in "cars" dataset
+plot (cars$speed, cars$dist)
+
+#using the 'cars' dataset to look at distance based on speed
+
+plot(
+	cars$speed, cars$dist, 
+	xlab = "Speed", ylab = "Distance", main = "Scatterplot", 
+	col = "red", pch = 19, cex = 2) 
+	
+#cex (1 is the default, if you want it to be bigger you change it to 2 (2x as big), or .5 will make it smaller--- makes the dots bigger)
+	
+----------------------------------------------------------------------
+
+#make up a new variable that represents type of car
+mycars = cars
+mycars$size = factor (c ("SUV", "Compact"))
+
+#check if it was done correctly
+head(mycars)
+  speed dist    size
+1     4    2     SUV
+2     4   10 Compact
+3     7    4     SUV
+4     7   22 Compact
+5     8   16     SUV
+6     9   10 Compact
+
+-----------------------------------------------------------------------
+#Let's get creative to color-code figure based on car size
+	#start with empty plot 
+	
+plot(
+mycars$speed, mycars$dist, 
+type = "n", xlab = "Speed", 
+ylab = "Distance", main = "Scatterplot")
+
+#add points for SUVs
+points(
+	mycars$speed [mycars$size == "SUV"], 
+	mycars$dist [mycars$size == "SUV"], 
+	col = "blue", pch = 1)
+#Add points for compact cars
+points(
+	mycars$speed[mycars$size == "Compact"], 
+	mycars$dist [mycars$size == "Compact"], 
+	col = "red", pch = 19)
+#Add a legend 
+	legend (
+	"topleft", 
+	c("SUV", "Compact"), 
+	col = c("blue", "red"), 
+	pch = c(1,19))
+# An easier option to color code (note the advantage of factors )
+
+plot(
+	mycars$speed, mycars$dist, 
+	col = mycars$size, 
+	pch = c(1, 19), 
+	xlab = "Speed", ylab = "Distance", main = "Scatterplot")
+	
+#Add the legend
+legend(
+	"topleft", c("SUV", "Compact"), col = c("red", "black"), pch = c(1,19))
+---------------------------------------------------------------------------------
+
+
+#Histograms & Boxplots
+#--------------------------
+
+#Display 4 images in 2 x2 arrangement
+par(mfrow = c(2, 2))
+
+#Histogram of Speed
+hist(mycars$speed)
+#Let's customize it a bit more (more bins, colored, etc)
+	hist(
+	mycars$speed, 
+	col = "lightblue", 
+	breaks = 10, 
+	main = "Speed Histogram", 
+	xlab = "Speed")
+#Boxplot
+boxplot (mycars$dist ~ mycars$size)
+#Customize it 
+boxplot (
+	mycars$dist ~ mycars$size,
+	col = c("purple", "aquamarine"),
+	main = "Boxplot of Dist by Car size", 
+	ylab = "Distance")
+	
+	
+	
+#------------------------------------------
+pch #plotting character
+col #color
+lty #line type
+lwd #line width
+xlab #label for x-axis
+ylab # label for y-axis
+main #title for plot
+cex #change font or plotting character size
+mfrow # multiple plots in one window
+mfcol
+
+
+#------------------------------------------
+ 
+ 
+ getwd()  #find what part of your hard drive you are working under
+ 
+ getwd()
+ 
+ 
+ 
+ 
+ #------------------------------------------------
+ #In class assignment
+ 
+ 
+#Avg extraversion score variable using bfi
+#with()
+
+names(bfi)
+
+dim(bfi)
+
+with (bfi, 
+		{Extravesion_avg = (E1 + E2 + E3 + E4 +E5) / 5})
+with (bfi, 
+		{Neuroticism_avg = (N1 + N2 + N3 + N4 + N5)/ 5})
+par (mfrow = c(1,2))
+
+MYbfi = bfi
+MYbfi$Extraversion = with(MYbfi, ((E1 + E2 + E3 + E4 +E5) / 5))
+MYbfi$Neurotocisms = with(MYbfi, ((N1 + N2 + N3 + N4 + N5)/ 5))
+
+head(MYbfi)
+
+plot(MYbfi$Extraversion, 
+		MYbfi$Neuroticisms,
+		xlab = "Extraversion", 
+		ylab = "Neuroticism", 
+		main = "Extraversion by Neuroticism Scatterplot", 
+		col = "orange", 
+		pch = 16)
+boxplot(
+		MYbfi$Extraversion, 
+		col = "pink", 
+		main = "Boxplot of Extraversion", 
+		ylab = "Extraversion Score")
+		
