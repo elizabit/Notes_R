@@ -1,2 +1,2 @@
 # Notes_R
-Notes from PSYC 490 course at UNC 
+Examples of Code I wrote during PSYC 490 at UNC Chapel Hill
